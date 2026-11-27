@@ -13,6 +13,16 @@ export const navLinks = [
 	{ label: 'Projetos', href: '#projetos' },
 ];
 
+export const authorProfile = {
+	name: 'Louis Wolkers',
+	headline: 'Dev Backend · Java · Kotlin · Pagamentos',
+	links: [
+		{ label: 'GitHub', href: 'https://github.com/louiswolkers', icon: 'simple:github' },
+		{ label: 'LinkedIn', href: 'https://www.linkedin.com/in/louiswolkers', icon: 'simple:linkedin' },
+		{ label: 'Currículo', href: 'https://louiswolkers.github.io', icon: 'lucide:file-text' },
+	],
+};
+
 export const noteExample = {
 	fileName: 'cerebro/skills/pesquisa.md',
 	header: [
