@@ -2,20 +2,27 @@
 import '@fontsource-variable/geist';
 import '@fontsource-variable/geist-mono';
 import '../styles/global.css';
+import { siteInfo } from '../data/siteContent';
 
 interface Props {
 	title: string;
 	description: string;
+	/** share image: path from the site root (file in public/) or full URL; 1200x630 works best */
+	image?: string;
 	/** false on pages without an address of their own, such as the error page */
 	isIndexable?: boolean;
 }
 
-const { title, description, isIndexable = true } = Astro.props;
+const { title, description, image, isIndexable = true } = Astro.props;
 
 const basePath = import.meta.env.BASE_URL;
-// absolute addresses need the public domain, which only exists in the published build
+// the page address needs the public domain, which only exists in the published build
 const pageUrl = isIndexable && Astro.site && new URL(Astro.url.pathname, Astro.site).href;
-const imageUrl = Astro.site && new URL(`${basePath}social-card.png`, Astro.site).href;
+// share images must be absolute; without a public domain, the current address is the base
+const imageUrl = new URL(image || `${basePath}social-card.png`, Astro.site ?? Astro.url).href;
+// size is only known for the default card
+const isDefaultImage = !image;
+const imageAlt = isDefaultImage ? 'Egnom, o monge robô' : title;
 ---
 
 <!doctype html>
@@ -30,21 +37,24 @@ const imageUrl = Astro.site && new URL(`${basePath}social-card.png`, Astro.site)
 		<title>{title}</title>
 		{!isIndexable && <meta name="robots" content="noindex" />}
 
+		{pageUrl && <link rel="canonical" href={pageUrl} />}
+
 		<meta property="og:type" content="website" />
 		<meta property="og:locale" content="pt_BR" />
+		<meta property="og:site_name" content={siteInfo.name} />
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
-		{pageUrl && <link rel="canonical" href={pageUrl} />}
 		{pageUrl && <meta property="og:url" content={pageUrl} />}
-		{imageUrl && (
-			<Fragment>
-				<meta property="og:image" content={imageUrl} />
-				<meta property="og:image:width" content="1200" />
-				<meta property="og:image:height" content="630" />
-				<meta property="og:image:alt" content="Egnom, o monge robô" />
-				<meta name="twitter:card" content="summary_large_image" />
-			</Fragment>
-		)}
+		<meta property="og:image" content={imageUrl} />
+		<meta property="og:image:alt" content={imageAlt} />
+		{isDefaultImage && <meta property="og:image:width" content="1200" />}
+		{isDefaultImage && <meta property="og:image:height" content="630" />}
+
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={imageUrl} />
+		<meta name="twitter:image:alt" content={imageAlt} />
 	</head>
 	<body class="overflow-x-hidden bg-ink font-sans text-white antialiased selection:bg-flame/40">
 		<slot />
