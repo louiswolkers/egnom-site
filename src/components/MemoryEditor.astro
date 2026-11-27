@@ -1,0 +1,87 @@
+---
+import { noteExample } from '../data/siteContent';
+import Icon from './Icon.astro';
+
+const folders = [
+	{ name: 'skills', note: 'pesquisa.md' },
+	{ name: 'notas', note: 'preferencias.md' },
+	{ name: 'conversas' },
+];
+---
+
+<section class="relative px-4 pb-24 sm:px-6">
+	<div class="glass-panel relative mx-auto max-w-6xl overflow-hidden rounded-2xl shadow-[0_0_80px_-20px_rgba(232,112,10,0.45)]">
+		<div class="flex items-center justify-between gap-3 border-b border-white/5 bg-white/[0.02] px-4 py-3">
+			<div class="flex min-w-0 items-center gap-4">
+				<div class="flex gap-1.5" aria-hidden="true">
+					<span class="size-2.5 rounded-full bg-red-500/50"></span>
+					<span class="size-2.5 rounded-full bg-yellow-500/50"></span>
+					<span class="size-2.5 rounded-full bg-green-500/50"></span>
+				</div>
+				<span class="break-all rounded border border-white/5 bg-white/5 px-3 py-1 font-mono text-[10px] text-white/60">{noteExample.fileName}</span>
+			</div>
+			<span class="shrink-0 font-mono text-[10px] text-ember">exemplo de nota</span>
+		</div>
+
+		<div class="grid min-h-[380px] lg:grid-cols-12">
+			<aside class="hidden border-r border-white/5 bg-black/20 p-4 font-mono text-xs text-white/55 lg:col-span-3 lg:block">
+				<p class="mb-4 flex items-center gap-2"><Icon name="lucide:folder-open" size={14} />cerebro</p>
+				<ul class="space-y-3 pl-4">
+					<li class="flex items-center gap-2"><Icon name="lucide:file-text" size={14} />CLAUDE.md</li>
+					{folders.map((folder) => (
+						<li>
+							<p class="flex items-center gap-2"><Icon name="lucide:folder" size={14} />{folder.name}</p>
+							{folder.note && (
+								<p class:list={['mt-2 ml-4 flex items-center gap-2 rounded px-2 py-1', folder.name === 'skills' && 'border border-ember/30 bg-ember/10 text-peach']}>
+									<Icon name="lucide:file-text" size={14} />{folder.note}
+								</p>
+							)}
+						</li>
+					))}
+				</ul>
+			</aside>
+
+			<div class="p-6 font-mono text-xs leading-7 text-white/80 sm:text-sm lg:col-span-9">
+				<p class="text-white/55">---</p>
+				{noteExample.header.map((field) => (
+					<p><span class="text-ember">{field.key}</span>: <span class="text-peach">{field.value}</span></p>
+				))}
+				<p class="text-white/55">---</p>
+				{noteExample.body.map((line) => (
+					<p class:list={['min-h-7', line.startsWith('#') && 'text-gold']}>{line}</p>
+				))}
+				<p class="grid">
+					<!-- invisible copy reserves the final height, so typing never shifts the page -->
+					<span class="invisible [grid-area:1/1]" aria-hidden="true">{noteExample.typedLine}</span>
+					<span class="[grid-area:1/1]">
+						<span id="typing-text" data-text={noteExample.typedLine}>{noteExample.typedLine}</span><span class="animate-blink ml-0.5 inline-block h-[1.1em] w-0.5 bg-gold align-middle"></span>
+					</span>
+				</p>
+			</div>
+		</div>
+	</div>
+</section>
+
+<script>
+	const typingElement = document.querySelector<HTMLElement>('#typing-text');
+	const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+	if (typingElement && !reducedMotion) {
+		const text = typingElement.dataset.text ?? '';
+		let length = 0;
+		typingElement.textContent = '';
+
+		const typeNextLetter = () => {
+			length += 1;
+			typingElement.textContent = text.slice(0, length);
+			if (length < text.length) setTimeout(typeNextLetter, 60);
+		};
+
+		const observer = new IntersectionObserver((entries) => {
+			if (!entries[0].isIntersecting) return;
+			observer.disconnect();
+			typeNextLetter();
+		});
+		observer.observe(typingElement.parentElement!);
+	}
+</script>

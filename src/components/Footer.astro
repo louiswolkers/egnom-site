@@ -1,0 +1,22 @@
+---
+import { navLinks, siteInfo } from '../data/siteContent';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="px-6 pt-16 pb-10">
+	<div class="mx-auto max-w-7xl">
+		<div class="mb-12 flex flex-col justify-between gap-8 md:flex-row">
+			<div>
+				<p class="mb-3 text-lg font-medium tracking-[0.35em]">{siteInfo.name}</p>
+				<p class="max-w-sm text-sm leading-relaxed text-white/55">Agente pessoal em forma de monge robô: calmo, preciso e gentil.</p>
+			</div>
+			<ul class="flex flex-wrap gap-6 text-sm text-white/55">
+				{navLinks.map((link) => (
+					<li><a class="transition-colors hover:text-white" href={link.href}>{link.label}</a></li>
+				))}
+			</ul>
+		</div>
+		<p class="border-t border-white/5 pt-8 text-xs text-white/55">© {year} {siteInfo.name}</p>
+	</div>
+</footer>

@@ -1,0 +1,73 @@
+---
+import { Image } from 'astro:assets';
+import monk from '../assets/egnom-monk.webp';
+import Icon from './Icon.astro';
+
+const orbits = [
+	{ inset: 'inset-[14%]', duration: '38s', reverse: false, orbs: [0, 72, 144, 216, 288] },
+	{ inset: 'inset-[3%]', duration: '60s', reverse: true, orbs: [20, 65, 130, 190, 245, 300, 340] },
+];
+---
+
+<section class="relative isolate overflow-hidden px-6 pt-32 pb-24">
+	<div class="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(#ffffff0a_1px,transparent_1px),linear-gradient(90deg,#ffffff0a_1px,transparent_1px)] bg-[size:48px_48px] [mask-image:radial-gradient(ellipse_at_50%_40%,black,transparent_70%)]"></div>
+
+	<div class="mx-auto max-w-5xl text-center">
+		<p class="animate-fade-in-up mb-8 inline-flex items-center gap-2 rounded-full border border-ember/25 bg-ember/10 px-3 py-1 text-xs font-medium tracking-wide">
+			<span class="relative flex size-2">
+				<span class="absolute inline-flex size-full animate-ping rounded-full bg-gold opacity-75"></span>
+				<span class="relative inline-flex size-2 rounded-full bg-flame"></span>
+			</span>
+			Agente pessoal com o app no seu computador
+		</p>
+
+		<h1 class="animate-fade-in-up mb-8 text-5xl leading-[1.05] font-semibold tracking-tighter [animation-delay:100ms] sm:text-7xl lg:text-8xl">
+			Conheça o Egnom,
+			<span class="block bg-gradient-to-r from-peach via-white to-ember bg-clip-text pb-2 text-transparent drop-shadow-[0_0_35px_rgba(232,112,10,0.35)]">
+				seu monge robô.
+			</span>
+		</h1>
+
+		<p class="animate-fade-in-up mx-auto mb-10 max-w-2xl text-lg leading-relaxed font-light text-sand [animation-delay:200ms] sm:text-xl">
+			Calmo, preciso e gentil. Ele conversa por voz ou texto, guarda o que aprende e
+			ajuda nas tarefas do dia a dia, em português.
+		</p>
+
+		<div class="animate-fade-in-up flex flex-col items-center justify-center gap-4 [animation-delay:300ms] sm:flex-row">
+			<a href="#capacidades" class="group flex w-full items-center justify-center gap-2 rounded-full border border-ember bg-panel px-8 py-3.5 text-sm font-semibold transition-all hover:scale-[1.02] hover:shadow-[0_0_40px_-10px_rgba(232,112,10,0.8)] sm:w-auto">
+				Ver capacidades
+				<Icon name="lucide:arrow-right" class="text-gold transition-transform group-hover:translate-x-1" />
+			</a>
+			<a href="#demonstracao" class="flex w-full items-center justify-center gap-2 rounded-full bg-white/10 px-8 py-3.5 text-sm font-medium backdrop-blur-xl transition-colors hover:bg-white/20 sm:w-auto">
+				<Icon name="lucide:message-circle" />
+				Conversar com ele
+			</a>
+		</div>
+	</div>
+
+	<div class="relative mx-auto mt-12 aspect-square w-full max-w-xl">
+		<div class="absolute inset-[18%] -z-10 rounded-full bg-flame/20 blur-[90px]"></div>
+		{orbits.map((orbit) => (
+			<div
+				class={`absolute ${orbit.inset} animate-spin rounded-full border border-ember/20`}
+				style={`animation-duration: ${orbit.duration}; animation-direction: ${orbit.reverse ? 'reverse' : 'normal'}`}
+				aria-hidden="true"
+			>
+				{orbit.orbs.map((angle) => (
+					<span class="absolute inset-0" style={`rotate: ${angle}deg`}>
+						<span class="absolute top-0 left-1/2 size-2.5 -translate-1/2 rounded-full bg-flame shadow-[0_0_12px_#e8700a] sm:size-3.5"></span>
+					</span>
+				))}
+			</div>
+		))}
+		<Image
+			src={monk}
+			alt="Egnom, o monge robô"
+			widths={[450, 700, 900]}
+			sizes="(min-width: 640px) 460px, 80vw"
+			loading="eager"
+			fetchpriority="high"
+			class="absolute inset-[10%] size-[80%] [mask-image:linear-gradient(black_80%,transparent_99%)]"
+		/>
+	</div>
+</section>

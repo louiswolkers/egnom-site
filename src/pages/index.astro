@@ -1,0 +1,32 @@
+---
+import Architecture from '../components/Architecture.astro';
+import CallToAction from '../components/CallToAction.astro';
+import Demo from '../components/Demo.astro';
+import Features from '../components/Features.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Integrations from '../components/Integrations.astro';
+import MemoryEditor from '../components/MemoryEditor.astro';
+import Principles from '../components/Principles.astro';
+import Projects from '../components/Projects.astro';
+import { siteInfo } from '../data/siteContent';
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title={siteInfo.title} description={siteInfo.description}>
+	<div id="top"></div>
+	<Header />
+	<main>
+		<Hero />
+		<MemoryEditor />
+		<Features />
+		<Demo />
+		<Principles />
+		<Architecture />
+		<Integrations />
+		<Projects />
+		<CallToAction />
+	</main>
+	<Footer />
+</Layout>

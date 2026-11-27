@@ -1,0 +1,64 @@
+---
+import { architectureSteps } from '../data/siteContent';
+import Icon from './Icon.astro';
+
+const satellites = [
+	{ icon: 'lucide:message-square', position: 'top-[12%] left-[12%]', delay: '0s' },
+	{ icon: 'lucide:server', position: 'right-[12%] bottom-[16%]', delay: '1s' },
+	{ icon: 'lucide:notebook-pen', position: 'top-[20%] right-[8%]', delay: '2s' },
+];
+const rings = [
+	{ size: 'size-40', duration: '12s' },
+	{ size: 'size-56', duration: '24s' },
+	{ size: 'size-72', duration: '30s' },
+];
+---
+
+<section id="como-funciona" class="relative overflow-hidden border-t border-white/5 py-24">
+	<div class="relative mx-auto max-w-7xl px-6">
+		<div class="mb-16 max-w-2xl">
+			<h2 class="mb-6 text-4xl font-medium tracking-tight md:text-5xl">Como funciona</h2>
+			<p class="text-lg leading-relaxed font-light text-sand">
+				A interface, o servidor e a memória ficam no seu computador. O raciocínio vem
+				do modelo de IA escolhido, acessado pela internet.
+			</p>
+		</div>
+
+		<div class="grid items-center gap-12 md:grid-cols-2">
+			<div class="relative h-[400px] overflow-hidden rounded-3xl border border-edge bg-[#0f0d0b]" aria-hidden="true">
+				{rings.map((ring) => (
+					<div class="absolute inset-0 flex items-center justify-center">
+						<div class={`relative animate-spin rounded-full border border-ember/20 ${ring.size}`} style={`animation-duration: ${ring.duration}`}>
+							<span class="absolute top-0 left-1/2 size-1.5 -translate-1/2 rounded-full bg-gold shadow-[0_0_10px_#ffc400]"></span>
+						</div>
+					</div>
+				))}
+				<div class="absolute inset-0 flex items-center justify-center">
+					<div class="flex size-24 items-center justify-center rounded-full border border-ember/50 bg-panel text-peach shadow-[0_0_50px_-5px_rgba(232,112,10,0.6)]">
+						<Icon name="lucide:brain" size={36} />
+					</div>
+				</div>
+				{satellites.map((satellite) => (
+					<div class={`animate-float absolute flex size-12 items-center justify-center rounded-xl border border-edge bg-ink text-ember ${satellite.position}`} style={`animation-delay: ${satellite.delay}`}>
+						<Icon name={satellite.icon} />
+					</div>
+				))}
+			</div>
+
+			<ol class="space-y-8">
+				{architectureSteps.map((step, index) => (
+					<li class="group flex gap-5">
+						<span class="flex size-12 shrink-0 items-center justify-center rounded-full border border-edge bg-panel font-mono text-sm text-ember transition-colors group-hover:border-gold">
+							{String(index + 1).padStart(2, '0')}
+						</span>
+						<div>
+							<h3 class="mb-2 text-xl font-medium transition-colors group-hover:text-peach">{step.title}</h3>
+							<p class="mb-2 text-sm leading-relaxed text-sand">{step.text}</p>
+							<code class="rounded border border-white/10 bg-white/5 px-1.5 py-0.5 font-mono text-xs text-white/70">{step.detail}</code>
+						</div>
+					</li>
+				))}
+			</ol>
+		</div>
+	</div>
+</section>

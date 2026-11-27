@@ -1,0 +1,52 @@
+---
+import '@fontsource-variable/geist';
+import '@fontsource-variable/geist-mono';
+import '../styles/global.css';
+
+interface Props {
+	title: string;
+	description: string;
+	/** false on pages without an address of their own, such as the error page */
+	isIndexable?: boolean;
+}
+
+const { title, description, isIndexable = true } = Astro.props;
+
+const basePath = import.meta.env.BASE_URL;
+// absolute addresses need the public domain, which only exists in the published build
+const pageUrl = isIndexable && Astro.site && new URL(Astro.url.pathname, Astro.site).href;
+const imageUrl = Astro.site && new URL(`${basePath}social-card.png`, Astro.site).href;
+---
+
+<!doctype html>
+<html lang="pt-BR">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="description" content={description} />
+		<meta name="theme-color" content="#0a0908" />
+		<meta name="generator" content={Astro.generator} />
+		<link rel="icon" type="image/svg+xml" href={`${basePath}favicon.svg`} />
+		<title>{title}</title>
+		{!isIndexable && <meta name="robots" content="noindex" />}
+
+		<meta property="og:type" content="website" />
+		<meta property="og:locale" content="pt_BR" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		{pageUrl && <link rel="canonical" href={pageUrl} />}
+		{pageUrl && <meta property="og:url" content={pageUrl} />}
+		{imageUrl && (
+			<Fragment>
+				<meta property="og:image" content={imageUrl} />
+				<meta property="og:image:width" content="1200" />
+				<meta property="og:image:height" content="630" />
+				<meta property="og:image:alt" content="Egnom, o monge robô" />
+				<meta name="twitter:card" content="summary_large_image" />
+			</Fragment>
+		)}
+	</head>
+	<body class="overflow-x-hidden bg-ink font-sans text-white antialiased selection:bg-flame/40">
+		<slot />
+	</body>
+</html>

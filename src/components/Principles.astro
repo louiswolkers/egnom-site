@@ -1,0 +1,35 @@
+---
+import { principles } from '../data/siteContent';
+
+const corners = [
+	'top-0 left-0 border-t border-l',
+	'top-0 right-0 border-t border-r',
+	'bottom-0 left-0 border-b border-l',
+	'bottom-0 right-0 border-b border-r',
+];
+---
+
+<section id="principios" class="border-t border-white/5 bg-panel/50 py-24">
+	<div class="mx-auto max-w-7xl px-6">
+		<p class="mb-2 font-mono text-xs tracking-widest text-ember uppercase">Código do monge</p>
+		<h2 class="mb-12 text-3xl font-medium">Princípios</h2>
+
+		<div class="grid gap-6 md:grid-cols-3">
+			{principles.map((principle) => (
+				<article class="group relative border border-white/5 bg-white/[0.02] p-6 transition-colors hover:border-ember/40">
+					{corners.map((corner) => (
+						<span class={`absolute size-2 border-white/20 transition-colors group-hover:border-gold ${corner}`}></span>
+					))}
+					<p class="mb-4 font-mono text-xs text-white/55">{principle.code}</p>
+					<h3 class="mb-2 text-lg font-medium">{principle.title}</h3>
+					<p class="mb-6 text-sm leading-relaxed text-sand">{principle.text}</p>
+					<ul class="flex gap-2">
+						{principle.tags.map((tag) => (
+							<li class="rounded bg-white/5 px-2 py-1 text-[10px] text-white/55">{tag}</li>
+						))}
+					</ul>
+				</article>
+			))}
+		</div>
+	</div>
+</section>

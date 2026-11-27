@@ -1,0 +1,94 @@
+---
+import { engineProfiles, moods } from '../data/siteContent';
+import Icon from './Icon.astro';
+
+const orbCount = 40;
+const card = 'glass-panel group rounded-3xl p-8 transition-colors duration-500 hover:border-ember/50';
+const iconBox = 'mb-6 flex size-12 items-center justify-center rounded-xl border border-ember/25 bg-ember/10 text-peach transition-transform group-hover:scale-110';
+const voiceBars = [40, 65, 30, 85, 55, 100, 70, 45, 80, 35, 60, 25];
+---
+
+<section id="capacidades" class="px-6 py-24">
+	<div class="mx-auto max-w-7xl">
+		<h2 class="mb-12 text-center text-4xl font-medium tracking-tight md:text-5xl">O que ele sabe fazer</h2>
+
+		<div class="grid gap-6 md:grid-cols-3">
+			<article class={`${card} flex flex-col`}>
+				<div class={iconBox}><Icon name="lucide:mic" size={24} /></div>
+				<h3 class="mb-2 text-lg font-medium">Conversa por voz</h3>
+				<p class="mb-6 text-sm leading-relaxed text-sand">
+					Transcreve sua fala no próprio computador e responde falando. Dá para
+					interromper e se despedir com um “tchau”.
+				</p>
+				<div class="mt-auto flex h-8 items-end gap-1" aria-hidden="true">
+					{voiceBars.map((height, index) => (
+						<span class="animate-glow w-1.5 rounded-sm bg-ember" style={`height: ${height}%; animation-delay: ${index * 0.2}s`}></span>
+					))}
+				</div>
+			</article>
+
+			<article class={`${card} flex flex-col`}>
+				<div class={iconBox}><Icon name="lucide:orbit" size={24} /></div>
+				<h3 class="mb-2 text-lg font-medium">Memória em bolinhas</h3>
+				<p class="mb-6 text-sm leading-relaxed text-sand">
+					Cada skill ou nota em markdown vira uma bolinha ao redor dele. Um clique
+					abre o conteúdo.
+				</p>
+				<ul class="mt-auto flex gap-4 border-t border-white/5 pt-4 text-xs text-white/50">
+					<li class="flex items-center gap-1.5"><span class="size-2.5 rounded-sm bg-flame"></span>Skill</li>
+					<li class="flex items-center gap-1.5"><span class="size-2.5 rounded-full bg-gold"></span>Nota</li>
+					<li class="flex items-center gap-1.5"><span class="size-2.5 rounded-full bg-neutral-200"></span>Memória</li>
+				</ul>
+			</article>
+
+			<article class={`${card} flex flex-col`}>
+				<div class={iconBox}><Icon name="lucide:smile" size={24} /></div>
+				<h3 class="mb-2 text-lg font-medium">Rosto com humor</h3>
+				<p class="mb-6 text-sm leading-relaxed text-sand">
+					A expressão do monge muda conforme a resposta, e a boca acompanha o volume
+					da voz.
+				</p>
+				<ul class="mt-auto flex flex-wrap gap-2 border-t border-white/5 pt-4">
+					{moods.map((mood) => (
+						<li class="rounded-full border border-edge px-2.5 py-1 font-mono text-[10px] text-ember">{mood}</li>
+					))}
+				</ul>
+			</article>
+
+			<article class={`${card} md:col-span-2`}>
+				<div class="flex h-full flex-col justify-between gap-8 sm:flex-row sm:items-center md:flex-col md:items-start lg:flex-row lg:items-center">
+					<div class="max-w-md">
+						<div class={iconBox}><Icon name="lucide:cpu" size={24} /></div>
+						<h3 class="mb-3 text-2xl font-medium">Você escolhe o motor</h3>
+						<p class="leading-relaxed text-sand">
+							Três perfis do Claude, para equilibrar consumo e qualidade. Se preferir,
+							troque para o Gemini. Em programação, o cérebro pode pedir uma segunda
+							opinião a outras IAs.
+						</p>
+					</div>
+					<ul class="w-full space-y-2 font-mono text-xs sm:w-60 sm:shrink-0 md:w-full lg:w-60">
+						{engineProfiles.map((profile) => (
+							<li class="flex items-center justify-between rounded-lg border border-edge bg-ink px-4 py-3">
+								<span class="text-peach">{profile.name}</span>
+								<span class="text-white/55">{profile.model} · {profile.effort}</span>
+							</li>
+						))}
+					</ul>
+				</div>
+			</article>
+
+			<article class={`${card} flex flex-col justify-between`}>
+				<p class="text-xs font-medium tracking-widest text-white/55 uppercase">Anéis de conhecimento</p>
+				<div class="my-6 grid grid-cols-10 gap-2" aria-hidden="true">
+					{Array.from({ length: orbCount }, (_, index) => (
+						<span class="animate-glow size-2.5 rounded-full bg-flame" style={`animation-delay: ${(index % 7) * 0.45}s`}></span>
+					))}
+				</div>
+				<div>
+					<p class="text-4xl font-medium tracking-tight">{orbCount}</p>
+					<p class="text-xs text-white/50">bolinhas antes de começar a agrupar em pastas</p>
+				</div>
+			</article>
+		</div>
+	</div>
+</section>

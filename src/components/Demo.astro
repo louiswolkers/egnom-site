@@ -1,0 +1,173 @@
+---
+import { Image } from 'astro:assets';
+import monk from '../assets/egnom-monk.webp';
+import { demoGreeting, demoQuestions } from '../data/demoQuestions';
+import Icon from './Icon.astro';
+
+const openingQuestions = demoGreeting.followUps.flatMap((id) => demoQuestions.filter((item) => item.id === id));
+const suggestionClass =
+	'cursor-pointer rounded-full border border-ember/30 bg-ember/10 px-4 py-2 text-left text-sm text-peach transition-colors hover:border-gold/60 hover:bg-ember/20';
+---
+
+<section id="demonstracao" class="px-6 py-24">
+	<div class="mx-auto mb-12 max-w-2xl text-center">
+		<p class="mb-2 font-mono text-xs tracking-widest text-ember uppercase">Demonstração</p>
+		<h2 class="mb-4 text-3xl font-medium tracking-tight">Converse com o Egnom</h2>
+		<p class="text-sand">Respostas pré-gravadas. O Egnom real roda no computador de quem o criou.</p>
+	</div>
+
+	<div id="demo" class="mx-auto max-w-3xl overflow-hidden rounded-2xl border border-edge bg-[#0f0d0b] shadow-2xl">
+		<div class="flex items-center justify-between gap-3 border-b border-white/5 bg-white/5 px-4 py-3">
+			<div class="flex items-center gap-3">
+				<Image src={monk} alt="" width={80} height={80} class="size-10 rounded-full border border-ember/30 bg-ember/10" />
+				<div>
+					<p class="text-sm font-medium">Egnom</p>
+					<p class="font-mono text-[10px] text-white/55">demonstração</p>
+				</div>
+			</div>
+			<p class="rounded-full border border-ember/25 bg-ember/10 px-3 py-1 font-mono text-[11px] text-white/70">
+				humor: <span id="demo-mood" class="text-gold">{demoGreeting.mood}</span>
+			</p>
+		</div>
+
+		<div id="demo-log" class="h-80 space-y-4 overflow-y-auto p-4 font-mono text-sm leading-relaxed break-words sm:h-96 sm:p-6" tabindex="0" role="group" aria-label="Conversa com o Egnom">
+			<p class="text-white/80"><span class="text-gold">egnom ➜</span> {demoGreeting.text}</p>
+		</div>
+
+		<div class="border-t border-white/5 p-4 sm:px-6">
+			<div id="demo-suggestions" class="flex min-h-10 flex-wrap items-start gap-2" role="group" aria-label="Perguntas sugeridas">
+				{openingQuestions.map((item) => (
+					<button type="button" class={suggestionClass} data-question-id={item.id} disabled>{item.question}</button>
+				))}
+			</div>
+			<button id="demo-restart" type="button" class="mt-3 hidden cursor-pointer items-center gap-2 text-xs text-white/55 hover:text-white">
+				<Icon name="lucide:rotate-ccw" size={12} />
+				Recomeçar
+			</button>
+		</div>
+
+		<p id="demo-announcer" class="sr-only" aria-live="polite"></p>
+
+		<noscript>
+			<dl class="space-y-4 border-t border-white/5 p-6 text-sm">
+				{demoQuestions.map((item) => (
+					<div>
+						<dt class="text-peach">{item.question}</dt>
+						<dd class="text-sand">{item.answer}</dd>
+					</div>
+				))}
+			</dl>
+		</noscript>
+	</div>
+
+	<template id="demo-question-template">
+		<p class="text-white/55"><span class="text-ember">você ➜</span> <span data-text></span></p>
+	</template>
+	<template id="demo-answer-template">
+		<p class="text-white/80"><span class="text-gold">egnom ➜</span> <span data-text></span></p>
+	</template>
+	<template id="demo-suggestion-template">
+		<button type="button" class={suggestionClass}></button>
+	</template>
+</section>
+
+<script>
+	import { demoGreeting, demoQuestions, type DemoQuestion } from '../data/demoQuestions';
+	import { DemoConversationService } from '../service/DemoConversationService';
+
+	const findElement = <T extends HTMLElement>(selector: string) => document.querySelector<T>(selector)!;
+
+	const log = findElement('#demo-log');
+	const moodLabel = findElement('#demo-mood');
+	const suggestions = findElement('#demo-suggestions');
+	const restartButton = findElement<HTMLButtonElement>('#demo-restart');
+	const announcer = findElement('#demo-announcer');
+	const greetingLine = log.firstElementChild!;
+
+	const conversation = new DemoConversationService(demoQuestions, demoGreeting.followUps);
+	const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+	let finishTyping = () => {};
+
+	const cloneTemplate = (selector: string) =>
+		findElement<HTMLTemplateElement>(selector).content.firstElementChild!.cloneNode(true) as HTMLElement;
+
+	const scrollToEnd = () => {
+		log.scrollTop = log.scrollHeight;
+	};
+
+	// while typing, only follow the text if the visitor has not scrolled up to reread
+	const isNearEnd = () => log.scrollHeight - log.scrollTop - log.clientHeight < 40;
+
+	const appendLine = (templateSelector: string, text: string) => {
+		const line = cloneTemplate(templateSelector);
+		const target = line.querySelector<HTMLElement>('[data-text]')!;
+		target.textContent = text;
+		log.append(line);
+		scrollToEnd();
+		return target;
+	};
+
+	const typeAnswer = (text: string) => {
+		const target = appendLine('#demo-answer-template', reducedMotion.matches ? text : '');
+		if (reducedMotion.matches) return;
+
+		let length = 0;
+		const timer = setInterval(() => {
+			length += 1;
+			const shouldFollow = isNearEnd();
+			target.textContent = text.slice(0, length);
+			if (shouldFollow) scrollToEnd();
+			if (length >= text.length) clearInterval(timer);
+		}, 15);
+
+		finishTyping = () => {
+			clearInterval(timer);
+			target.textContent = text;
+		};
+	};
+
+	const finishedText = 'Você já fez todas as perguntas.';
+
+	const showSuggestions = (current?: DemoQuestion) => {
+		const buttons = conversation.findSuggestions(current).map((item) => {
+			const button = cloneTemplate('#demo-suggestion-template');
+			button.textContent = item.question;
+			button.dataset.questionId = item.id;
+			return button;
+		});
+		suggestions.replaceChildren(...buttons);
+		if (!buttons.length) suggestions.textContent = finishedText;
+		return buttons.length;
+	};
+
+	suggestions.addEventListener('click', (event) => {
+		const button = (event.target as HTMLElement).closest<HTMLButtonElement>('button[data-question-id]');
+		const current = button && conversation.askQuestion(button.dataset.questionId!);
+		if (!current) return;
+
+		const hadKeyboardFocus = button.matches(':focus-visible');
+		finishTyping();
+		appendLine('#demo-question-template', current.question);
+		typeAnswer(current.answer);
+		moodLabel.textContent = current.mood;
+		const remaining = showSuggestions(current);
+		announcer.textContent = `Egnom, humor ${current.mood}: ${current.answer} ${remaining ? '' : finishedText}`;
+		restartButton.classList.replace('hidden', 'flex');
+
+		// the clicked button is gone, so keep keyboard users in the same place
+		if (hadKeyboardFocus) (suggestions.querySelector('button') ?? restartButton).focus();
+	});
+
+	restartButton.addEventListener('click', () => {
+		finishTyping();
+		conversation.restartConversation();
+		log.replaceChildren(greetingLine);
+		moodLabel.textContent = demoGreeting.mood;
+		announcer.textContent = demoGreeting.text;
+		showSuggestions();
+		restartButton.classList.replace('flex', 'hidden');
+		suggestions.querySelector('button')?.focus();
+	});
+
+	showSuggestions();
+</script>
